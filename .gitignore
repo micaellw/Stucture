@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# Java
+*.class
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

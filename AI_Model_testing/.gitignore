@@ -1,0 +1,36 @@
+# --- Python Specific ---
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+**/Main_CI.egg-info/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
+# --- Build & Compiled Artifacts ---
+# ตัดโฟลเดอร์ build ที่สร้างโดย setup.py ทิ้งทั้งหมด
+build/
+SetUp/build/
+dist/
+
+# ตัดไฟล์ที่ C++ build ออกมา (ไฟล์เหล่านี้รันได้เฉพาะ OS/Python version นั้นๆ)
+*.pyd
+*.so
+*.obj
+*.o
+*.lib
+*.exp
+*.dll
+
+# --- IDE & Environment ---
+.vscode/
+.idea/
+venv/
+.env
+
+# --- OS Specific ---
+Thumbs.db
+Desktop.ini
