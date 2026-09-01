@@ -21,22 +21,35 @@
 ### 1. ฟังก์ชันความเหมาะสม (Fitness Evaluation Function)
 ใช้วิธี **Fisher Score** ควบคู่กับค่าปรับตามสัดส่วนฟีเจอร์ที่ถูกเลือก (Penalty Factor) เพื่อบีบให้ฝูงอนุภาคเลือกเฉพาะฟีเจอร์ที่สำคัญจริง:
 
-- **สำหรับข้อมูล Binary Classification:**
-  $$\text{Fisher Score}_j = \frac{(\mu_{0, j} - \mu_{1, j})^2}{\sigma_{0, j}^2 + \sigma_{1, j}^2}$$
-  $$\text{Fitness} = \frac{1}{|S|} \sum_{j \in S} \text{Fisher Score}_j - \left(0.05 \times \frac{|S|}{D}\right)$$
-  *(โดยที่ $|S|$ คือจำนวนฟีเจอร์ที่ถูกเลือก และ $D$ คือจำนวนฟีเจอร์ทั้งหมด)*
+#### • สำหรับข้อมูล Binary Classification:
 
-- **สำหรับข้อมูล Multiclass Classification:**
-  $$\text{Fisher Score}_j = \frac{\text{Between-class Scatter}}{\text{Within-class Scatter}} = \frac{\sum_{c=1}^{C} N_c (\mu_{c, j} - \mu_{\text{global}, j})^2}{\sum_{c=1}^{C} \sum_{i \in c} (x_{i, j} - \mu_{c, j})^2}$$
-  $$\text{Fitness} = \frac{1}{|S|} \sum_{j \in S} \text{Fisher Score}_j - \left(0.05 \times \frac{|S|}{D}\right)$$
+$$\text{Fisher Score}_j = \frac{(\mu_{0, j} - \mu_{1, j})^2}{\sigma_{0, j}^2 + \sigma_{1, j}^2}$$
+
+$$\text{Fitness} = \frac{1}{|S|} \sum_{j \in S} \text{Fisher Score}_j - \left(0.05 \times \frac{|S|}{D}\right)$$
+
+*(โดยที่ $|S|$ คือจำนวนฟีเจอร์ที่ถูกเลือก และ $D$ คือจำนวนฟีเจอร์ทั้งหมด)*
+
+#### • สำหรับข้อมูล Multiclass Classification:
+
+$$\text{Fisher Score}_j = \frac{\text{Between-class Scatter}}{\text{Within-class Scatter}} = \frac{\sum_{c=1}^{C} N_c (\mu_{c, j} - \mu_{\text{global}, j})^2}{\sum_{c=1}^{C} \sum_{i \in c} (x_{i, j} - \mu_{c, j})^2}$$
+
+$$\text{Fitness} = \frac{1}{|S|} \sum_{j \in S} \text{Fisher Score}_j - \left(0.05 \times \frac{|S|}{D}\right)$$
+
+---
 
 ### 2. การอัปเดตความเร็วและตำแหน่งของอนุภาค (Swarm Dynamics)
-- **Velocity Update:**
-  $$v_{i, j}^{t+1} = w \cdot v_{i, j}^t + c_1 r_1 (pbest_{i, j} - x_{i, j}^t) + c_2 r_2 (gbest_j - x_{i, j}^t)$$
-  *(กำหนด $w=0.7, c_1=1.5, c_2=1.5$)*
-- **Position Update (Sigmoid Transfer Function):**
-  $$S(v_{i, j}^{t+1}) = \frac{1}{1 + e^{-v_{i, j}^{t+1}}}$$
-  $$x_{i, j}^{t+1} = \begin{cases} 1 & \text{ถ้า } \text{rand}(0, 1) < S(v_{i, j}^{t+1}) \\ 0 & \text{กรณีอื่นๆ} \end{cases}$$
+
+#### • Velocity Update:
+
+$$v_{i, j}^{t+1} = w \cdot v_{i, j}^t + c_1 r_1 (pbest_{i, j} - x_{i, j}^t) + c_2 r_2 (gbest_j - x_{i, j}^t)$$
+
+*(กำหนด $w=0.7, c_1=1.5, c_2=1.5$)*
+
+#### • Position Update (Sigmoid Transfer Function):
+
+$$S(v_{i, j}^{t+1}) = \frac{1}{1 + e^{-v_{i, j}^{t+1}}}$$
+
+$$x_{i, j}^{t+1} = \begin{cases} 1 & \text{if } \text{rand}(0, 1) < S(v_{i, j}^{t+1}) \\ 0 & \text{otherwise} \end{cases}$$
 
 ---
 
