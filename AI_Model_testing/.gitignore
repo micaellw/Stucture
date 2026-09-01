@@ -30,7 +30,8 @@ dist/
 .idea/
 venv/
 .env
-
+.png
+.jpg
 # --- OS Specific ---
 Thumbs.db
 Desktop.ini
