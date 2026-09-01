@@ -1,7 +1,8 @@
-#ส่ง Dataset ไปส่วนต่างๆ
+# ส่ง Dataset ไปส่วนต่างๆ
 from sklearn.datasets import load_breast_cancer
 from sklearn.preprocessing import StandardScaler
-from .Computational_Intelligence.CI_Model.PSO.BPSO.PSOmain import acceptData
+from .Computational_Intelligence.CI_Model.PSO.BPSO.PSOmain import acceptData as acceptData_cpp
+from .Computational_Intelligence.CI_Model.PSO.Python_PSO.BPSO.PSOmain import acceptData as acceptData_python
 from .model.DecisionTree import DecisionModel
 from .model.Train_Test_Split import Train_Test 
 from .model.Random_Forest import RF
@@ -11,124 +12,108 @@ from .model.prepare_data_universal import prepare_Data_universal
 import time
 
 class SendData:
+    def __init__(self, engine="cpp", dataset=None):
+        """
+        engine: 'cpp' for C++ BPSO, 'python' for Pure Python BPSO
+        """
+        self.engine = engine.lower()
+        if dataset is None:
+            self.data = load_breast_cancer()
+        else:
+            self.data = dataset
 
+        self.X, self.y = prepare_Data_universal(sklearn_dataset=self.data)
+        self.execution_time = 0
+
+        self.scaler = StandardScaler()
+        self.X_scaled = self.scaler.fit_transform(self.X)
+
+        if self.engine == "python":
+            self.X_selected, self.best_mask, self.FitnessSore, self.timepso = acceptData_python(self.X_scaled, self.y)
+        else:
+            self.X_selected, self.best_mask, self.FitnessSore, self.timepso = acceptData_cpp(self.X_scaled, self.y)
+
+        self.X_trainPso, self.X_testPso, self.y_trainPso, self.y_testPso = Train_Test(self.X_selected, self.y)
+        self.X_train, self.X_test, self.y_train, self.y_test = Train_Test(self.X, self.y)
+
+    # Class-level defaults for backward compatibility
     data = load_breast_cancer()
-    
-    X , y= prepare_Data_universal(sklearn_dataset=data)
-
+    X, y = prepare_Data_universal(sklearn_dataset=data)
     execution_time = 0
-
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
-    
-    X_selected , best_mask , FitnessSore ,timepso = acceptData(X_scaled , y)
+    X_selected, best_mask, FitnessSore, timepso = acceptData_cpp(X_scaled, y)
+    X_trainPso, X_testPso, y_trainPso, y_testPso = Train_Test(X_selected, y)
+    X_train, X_test, y_train, y_test = Train_Test(X, y)
 
-    X_trainPso, X_testPso , y_trainPso ,y_testPso = Train_Test(X_selected,y)
-    X_train, X_test , y_train ,y_test = Train_Test(X,y)
-
-    
     def DicisionTree_PSO(self):
-
         if self.X_selected.shape[1] == 0:
             return 0
-    
         start_time = time.perf_counter()
-        self.score = DecisionModel( self.X_trainPso, self.X_testPso , self.y_trainPso ,self.y_testPso )
+        self.score = DecisionModel(self.X_trainPso, self.X_testPso, self.y_trainPso, self.y_testPso)
         end_time = time.perf_counter()
-
         self.execution_time = end_time - start_time
-       
         return self.score 
-    
+
     def DicisionTree(self):
-
         if self.X_selected.shape[1] == 0:
             return 0
-        
         start_time = time.perf_counter()
-        self.score = DecisionModel( self.X_train, self.X_test , self.y_train ,self.y_test )
+        self.score = DecisionModel(self.X_train, self.X_test, self.y_train, self.y_test)
         end_time = time.perf_counter()
-
         self.execution_time = end_time - start_time
-
         return self.score 
-    
+
     def Random_Forest_PSO(self):
-
         if self.X_selected.shape[1] == 0:
             return 0
-        
         start_time = time.perf_counter()
-        self.score = RF(self.X_trainPso, self.X_testPso , self.y_trainPso ,self.y_testPso)
+        self.score = RF(self.X_trainPso, self.X_testPso, self.y_trainPso, self.y_testPso)
         end_time = time.perf_counter()
-
         self.execution_time = end_time - start_time
-
         return self.score 
-    
+
     def Random_Forest(self):
-
         if self.X_selected.shape[1] == 0:
             return 0
-        
         start_time = time.perf_counter()
-        self.score = RF(self.X_train, self.X_test , self.y_train ,self.y_test )
+        self.score = RF(self.X_train, self.X_test, self.y_train, self.y_test)
         end_time = time.perf_counter()
-
         self.execution_time = end_time - start_time
-
         return self.score 
-    
+
     def KNN_PSO(self):
-
         if self.X_selected.shape[1] == 0:
             return 0
-        
         start_time = time.perf_counter()
-        self.score = K_nn(self.X_trainPso, self.X_testPso , self.y_trainPso ,self.y_testPso)
+        self.score = K_nn(self.X_trainPso, self.X_testPso, self.y_trainPso, self.y_testPso)
         end_time = time.perf_counter()
-
         self.execution_time = end_time - start_time
-        
         return self.score 
-    
+
     def KNN(self):
-
         if self.X_selected.shape[1] == 0:
             return 0
-        
         start_time = time.perf_counter()
-        self.score = K_nn(self.X_train, self.X_test , self.y_train ,self.y_test )
+        self.score = K_nn(self.X_train, self.X_test, self.y_train, self.y_test)
         end_time = time.perf_counter()
-
         self.execution_time = end_time - start_time
-
         return self.score 
-    
+
     def SVM_PSO(self):
-
         if self.X_selected.shape[1] == 0:
             return 0
-        
         start_time = time.perf_counter()
-        self.score = svm(self.X_trainPso, self.X_testPso , self.y_trainPso ,self.y_testPso)
+        self.score = svm(self.X_trainPso, self.X_testPso, self.y_trainPso, self.y_testPso)
         end_time = time.perf_counter()
-
         self.execution_time = end_time - start_time
-
         return self.score 
-    
+
     def SVM(self):
-
         if self.X_selected.shape[1] == 0:
             return 0
-        
         start_time = time.perf_counter()
-        self.score = svm(self.X_train, self.X_test , self.y_train ,self.y_test )
+        self.score = svm(self.X_train, self.X_test, self.y_train, self.y_test)
         end_time = time.perf_counter()
-
         self.execution_time = end_time - start_time
-
         return self.score 
-
-
